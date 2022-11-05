@@ -1,23 +1,24 @@
 #include "server.h"
 
 #include <array>
+#include <netinet/in.h>
+#include <stdexcept>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
 
-void connectionHandler(int fd) {
-  std::array<char, 4096> buffer{0};
+void connectionHandler(const int& fd) {
+  std::array<char, 4096> buffer{};
 
   while (true) {
     buffer = {0};
 
-    int incoming = recv(fd, buffer.data(), buffer.size(), 0);
-
-    if (incoming == 0)
-      break;
+    auto incoming = recv(fd, buffer.data(), buffer.size(), 0);
 
     if (incoming > 0)
       send(fd, buffer.data(), incoming, 0);
+    else
+      break;
   }
 
   close(fd);
@@ -38,8 +39,9 @@ void Socket::Poll() {
 
 Socket::Socket(const int& port) {
   const int reuse = 1;
-  serverAddr.sin6_port = htons(port);
-
+  sockaddr_in6 serverAddr{.sin6_family = AF_INET6,
+                          .sin6_port = htons(port),
+                          .sin6_addr = in6addr_any};
   try {
     fd = socket(AF_INET6, SOCK_STREAM, 0);
 
