@@ -1,0 +1,5 @@
+!Makefile
+nimcache/
+tests/tests
+testresults
+bin/
