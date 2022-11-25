@@ -3,7 +3,6 @@ use std::error::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 use tracing::{event, Level};
-use tracing_subscriber::FmtSubscriber;
 
 #[derive(Debug, Clone)]
 struct Packet {
@@ -97,19 +96,10 @@ async fn handle_connection(mut socket: TcpStream) {
     }
 }
 
-#[cfg(debug_assertions)]
-fn debug_only() {
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::TRACE)
-        .finish();
-
-    tracing::subscriber::set_global_default(subscriber).unwrap();
-}
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     #[cfg(debug_assertions)]
-    debug_only();
+    tracing_subscriber::fmt::init();
 
     let addr = "0.0.0.0:45100";
     let listener = TcpListener::bind(&addr).await?;
