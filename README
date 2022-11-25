@@ -7,3 +7,12 @@ Some https://protohackers.com/ challenges during RC.
 P00 - C++
 P01 - Nim
 P02 - Rust
+
+To build static bins with x86_64-unknown-linux-musl (SYSV ABI) toolchain:
+
+C++ (Nix)
+    docker run -it -v $(pwd)/build:/out $(docker build -q .)
+
+Nim/Rust
+    use musl-gcc/rustup Makefiles
+    
